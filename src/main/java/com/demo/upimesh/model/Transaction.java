@@ -13,6 +13,9 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 64)
+    private String packetHash;
+
     @Column(nullable = false)
     private String senderVpa;
 
@@ -35,6 +38,9 @@ public class Transaction {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public String getPacketHash() { return packetHash; }
+    public void setPacketHash(String packetHash) { this.packetHash = packetHash; }
 
     public String getSenderVpa() { return senderVpa; }
     public void setSenderVpa(String senderVpa) { this.senderVpa = senderVpa; }
