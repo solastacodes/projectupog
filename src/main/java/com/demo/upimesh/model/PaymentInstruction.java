@@ -8,14 +8,18 @@ public class PaymentInstruction {
     private String receiverVpa;
     private BigDecimal amount;
     private String pinHash;
+    private String nonce;     
+    private Long signedAt; 
 
     public PaymentInstruction() {}
 
-    public PaymentInstruction(String senderVpa, String receiverVpa, BigDecimal amount, String pinHash) {
+    public PaymentInstruction(String senderVpa, String receiverVpa, BigDecimal amount, String pinHash, String nonce, Long signedAt) {
         this.senderVpa = senderVpa;
         this.receiverVpa = receiverVpa;
         this.amount = amount;
         this.pinHash = pinHash;
+        this.nonce = nonce;
+        this.signedAt = signedAt;
     }
 
     public String getSenderVpa() { return senderVpa; }
@@ -29,4 +33,10 @@ public class PaymentInstruction {
 
     public String getPinHash() { return pinHash; }
     public void setPinHash(String pinHash) { this.pinHash = pinHash; }
+    
+    public String getNonce() { return nonce; }
+    public void setNonce(String nonce) { this.nonce = nonce; }
+
+    public Long getSignedAt() { return signedAt; }
+    public void setSignedAt(Long signedAt) { this.signedAt = signedAt; }
 }

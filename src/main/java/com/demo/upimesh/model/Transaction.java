@@ -26,6 +26,10 @@ public class Transaction {
     private BigDecimal amount;
 
     @Column(nullable = false)
+    private Instant signedAt; 
+    
+
+    @Column(nullable = false)
     private Instant settledAt; 
 
     @Enumerated(EnumType.STRING)
@@ -50,6 +54,9 @@ public class Transaction {
 
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
+
+    public Instant getSignedAt() { return signedAt; }
+    public void setSignedAt(Instant signedAt) { this.signedAt = signedAt; }
 
     public Instant getSettledAt() { return settledAt; }
     public void setSettledAt(Instant settledAt) { this.settledAt = settledAt; }

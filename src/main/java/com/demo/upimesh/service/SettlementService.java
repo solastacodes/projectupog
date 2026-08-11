@@ -52,6 +52,7 @@ public class SettlementService {
         tx.setSenderVpa(instruction.getSenderVpa());
         tx.setReceiverVpa(instruction.getReceiverVpa());
         tx.setAmount(amount);
+        tx.setSignedAt(Instant.ofEpochMilli(instruction.getSignedAt()));
         tx.setSettledAt(Instant.now());
         tx.setStatus(Transaction.Status.SETTLED);
         transactions.save(tx);

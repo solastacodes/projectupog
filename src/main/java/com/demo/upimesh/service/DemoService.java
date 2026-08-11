@@ -1,5 +1,6 @@
 package com.demo.upimesh.service;
 
+import com.demo.upimesh.crypto.HybridCryptoService;
 import javax.crypto.Cipher;
 import java.util.Base64;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
+import java.time.Instant;
 import java.util.UUID;
 
 
@@ -27,6 +29,7 @@ public class DemoService {
 
     @Autowired private AccountRepository accounts;
     @Autowired private ServerKeyHolder serverKey;
+    @Autowired private HybridCryptoService crypto;
 
     @PostConstruct
     public void seedAccounts() {
@@ -46,13 +49,11 @@ public class DemoService {
                 receiverVpa,
                 amount,
                 sha256Hex(pin)
+                UUID.randomUUID().toString(),     
+                Instant.now().toEpochMilli() 
         );
 
-        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, serverKey.getPublicKey());
-        ObjectMapper mapper = new ObjectMapper();
-        byte[] json = mapper.writeValueAsBytes(instruction);
-        String ciphertext = Base64.getEncoder().encodeToString(cipher.doFinal(json));
+        String ciphertext = crypto.encrypt(instruction, serverKey.getPublicKey());
 
         MeshPacket packet = new MeshPacket();
         packet.setPacketId(UUID.randomUUID().toString());
