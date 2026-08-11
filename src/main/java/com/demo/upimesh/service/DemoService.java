@@ -48,7 +48,7 @@ public class DemoService {
                 senderVpa,
                 receiverVpa,
                 amount,
-                sha256Hex(pin)
+                sha256Hex(pin),
                 UUID.randomUUID().toString(),     
                 Instant.now().toEpochMilli() 
         );
