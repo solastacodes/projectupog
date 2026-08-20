@@ -19,6 +19,7 @@ public class ApiController {
     @Autowired private MeshSimulatorService mesh;
     @Autowired private BridgeIngestionService bridge;
     @Autowired private AccountRepository accountRepo;
+    @Autowired private IdempotencyService idempotency;
     @Autowired private TransactionRepository txRepo;
 
     @GetMapping("/server-key")
@@ -70,7 +71,8 @@ public class ApiController {
             ));
         }
         return Map.of(
-                "devices", deviceData
+                "devices", deviceData,
+                "idempotencyCacheSize", idempotency.size()
         );
     }
 
@@ -112,7 +114,8 @@ public class ApiController {
     @PostMapping("/mesh/reset")
     public Map<String, Object> meshReset() {
         mesh.resetMesh();
-        return Map.of("status", "mesh cleared");
+        idempotency.clear();
+        return Map.of("status", "mesh and idempotency cache cleared");
     }
 
     @PostMapping("/bridge/ingest")

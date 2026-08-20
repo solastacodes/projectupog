@@ -17,6 +17,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.MGF1ParameterSpec;
 import java.util.Base64;
+import java.security.MessageDigest;
 
 
 
@@ -73,7 +74,7 @@ public class HybridCryptoService {
 
   
     // Decrypt with the server's private key.
-    
+
     public PaymentInstruction decrypt(String base64Ciphertext) throws Exception {
         byte[] all = Base64.getDecoder().decode(base64Ciphertext);
 
@@ -104,6 +105,15 @@ public class HybridCryptoService {
         byte[] plaintext = aes.doFinal(aesCiphertext);
 
         return json.readValue(plaintext, PaymentInstruction.class);
+    }
+    public String hashCiphertext(String base64Ciphertext) throws Exception {
+        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+        byte[] hash = sha256.digest(base64Ciphertext.getBytes());
+        StringBuilder hex = new StringBuilder();
+        for (byte b : hash) {
+            hex.append(String.format("%02x", b));
+        }
+        return hex.toString();
     }
     
 }

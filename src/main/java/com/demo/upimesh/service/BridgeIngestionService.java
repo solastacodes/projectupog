@@ -18,11 +18,24 @@ public class BridgeIngestionService {
     private static final Logger log = LoggerFactory.getLogger(BridgeIngestionService.class);
 
     @Autowired private HybridCryptoService crypto;
+    @Autowired private IdempotencyService idempotency;
     @Autowired private SettlementService settlement;
+    
+    @Value("${upi.mesh.packet-max-age-seconds:86400}")
+    private long maxAgeSeconds;
+
 
     public IngestResult ingest(MeshPacket packet, String bridgeNodeId, int hopCount) {
         try {
-            String packetHash = packet.getPacketId();
+            String packetHash = crypto.hashCiphertext(packet.getCiphertext());
+
+             // Idempotency gate
+            if (!idempotency.claim(packetHash)) {
+                log.info("DUPLICATE packet {} from bridge {} — dropped",
+                        packetHash.substring(0, 12) + "...", bridgeNodeId);
+                return IngestResult.duplicate(packetHash);
+            }
+
 
             //  Decrypt 
             PaymentInstruction instruction;
@@ -33,6 +46,19 @@ public class BridgeIngestionService {
                         packetHash.substring(0, 12) + "...", e.getMessage());
                 return IngestResult.invalid(packetHash, "decryption_failed");
             }
+            
+            // Freshness check
+
+            long ageSeconds = (Instant.now().toEpochMilli() - instruction.getSignedAt()) / 1000;
+            if (ageSeconds > maxAgeSeconds) {
+                log.warn("Packet {} too old ({}s), rejected",
+                        packetHash.substring(0, 12) + "...", ageSeconds);
+                return IngestResult.invalid(packetHash, "stale_packet");
+            }
+            if (ageSeconds < -300) {
+                return IngestResult.invalid(packetHash, "future_dated");
+            }
+
 
             //  Settle 
             Transaction tx = settlement.settle(instruction, packetHash, bridgeNodeId, hopCount);
