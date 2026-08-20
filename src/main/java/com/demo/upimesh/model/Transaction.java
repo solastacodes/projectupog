@@ -28,9 +28,14 @@ public class Transaction {
     @Column(nullable = false)
     private Instant signedAt; 
     
-
     @Column(nullable = false)
     private Instant settledAt; 
+
+    @Column(nullable = false)
+    private String bridgeNodeId;
+
+    @Column(nullable = false)
+    private int hopCount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -60,6 +65,13 @@ public class Transaction {
 
     public Instant getSettledAt() { return settledAt; }
     public void setSettledAt(Instant settledAt) { this.settledAt = settledAt; }
+
+    public String getBridgeNodeId() { return bridgeNodeId; }
+    public void setBridgeNodeId(String bridgeNodeId) { this.bridgeNodeId = bridgeNodeId; }
+
+    public int getHopCount() { return hopCount; }
+    public void setHopCount(int hopCount) { this.hopCount = hopCount; }
+
 
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }

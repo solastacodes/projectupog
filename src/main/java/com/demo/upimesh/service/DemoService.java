@@ -1,9 +1,6 @@
 package com.demo.upimesh.service;
 
 import com.demo.upimesh.crypto.HybridCryptoService;
-import javax.crypto.Cipher;
-import java.util.Base64;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.demo.upimesh.crypto.ServerKeyHolder;
 import com.demo.upimesh.model.Account;
@@ -43,7 +40,7 @@ public class DemoService {
     }
 
     public MeshPacket createPacket(String senderVpa, String receiverVpa,
-                                   BigDecimal amount, String pin) throws Exception {
+                                   BigDecimal amount, String pin, int ttl) throws Exception {
         PaymentInstruction instruction = new PaymentInstruction(
                 senderVpa,
                 receiverVpa,
@@ -57,6 +54,8 @@ public class DemoService {
 
         MeshPacket packet = new MeshPacket();
         packet.setPacketId(UUID.randomUUID().toString());
+        packet.setTtl(ttl);
+        packet.setCreatedAt(Instant.now().toEpochMilli());
         packet.setCiphertext(ciphertext);
         return packet;
     }

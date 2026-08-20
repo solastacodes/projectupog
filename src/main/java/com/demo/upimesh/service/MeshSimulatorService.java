@@ -39,20 +39,28 @@ public class MeshSimulatorService {
         VirtualDevice sender = devices.get(senderDeviceId);
         if (sender == null) throw new IllegalArgumentException("Unknown device: " + senderDeviceId);
         sender.hold(packet);
-        log.info("Packet {} injected at {}", packet.getPacketId().substring(0, 8), senderDeviceId);
+        log.info("Packet {} injected at {} (TTL={})",
+                packet.getPacketId().substring(0, 8), senderDeviceId, packet.getTtl());
     }
 
     public GossipResult gossipOnce() {
         int transfers = 0;
         List<VirtualDevice> deviceList = new ArrayList<>(devices.values());
 
+        Map<String, List<MeshPacket>> snapshot = new HashMap<>();
+        for (VirtualDevice d : deviceList) {
+            snapshot.put(d.getDeviceId(), new ArrayList<>(d.getHeldPackets()));
+        }
         for (VirtualDevice src : deviceList) {
-            for (MeshPacket pkt : src.getHeldPackets()) {
+            for (MeshPacket pkt : snapshot.get(src.getDeviceId())) {
+                if (pkt.getTtl() <= 0) continue;
                 for (VirtualDevice dst : deviceList) {
                     if (dst == src) continue;
-                    
+                    if (dst.holds(pkt.getPacketId())) continue;
                     MeshPacket copy = new MeshPacket();
                     copy.setPacketId(pkt.getPacketId());
+                    copy.setTtl(pkt.getTtl() - 1);
+                    copy.setCreatedAt(pkt.getCreatedAt());
                     copy.setCiphertext(pkt.getCiphertext());
                     dst.hold(copy);
                     transfers++;

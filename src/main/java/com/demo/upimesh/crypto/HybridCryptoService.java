@@ -105,6 +105,5 @@ public class HybridCryptoService {
 
         return json.readValue(plaintext, PaymentInstruction.class);
     }
-
-   
+    
 }
