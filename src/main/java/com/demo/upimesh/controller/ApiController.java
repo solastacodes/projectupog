@@ -91,7 +91,7 @@ public class ApiController {
 
         List<Map<String, Object>> results = new ArrayList<>();
         
-        uploads.stream().forEach(up -> {
+         uploads.parallelStream().forEach(up -> {
             BridgeIngestionService.IngestResult r =
                     bridge.ingest(up.packet(), up.bridgeNodeId(), 5 - up.packet().getTtl());
             synchronized (results) {

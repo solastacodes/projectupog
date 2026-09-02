@@ -2,6 +2,7 @@ package com.demo.upimesh.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.Instant;
 import java.util.Map;
@@ -23,6 +24,12 @@ public class IdempotencyService {
 
     public int size() {
         return seen.size();
+    }
+    
+    @Scheduled(fixedDelay = 60_000)
+    public void evictExpired() {
+        Instant cutoff = Instant.now().minusSeconds(ttlSeconds);
+        seen.entrySet().removeIf(e -> e.getValue().isBefore(cutoff));
     }
 
     public void clear() {

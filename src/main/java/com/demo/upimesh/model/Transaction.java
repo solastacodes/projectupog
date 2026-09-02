@@ -6,14 +6,15 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "transactions",
+        indexes = { @Index(name = "idx_packet_hash", columnList = "packetHash", unique = true) })
 public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 64)
+    @Column(nullable = false,  unique = true, length = 64)
     private String packetHash;
 
     @Column(nullable = false)

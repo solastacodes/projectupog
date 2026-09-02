@@ -9,13 +9,17 @@ import java.math.BigDecimal;
 public class Account {
 
     @Id
-    private String vpa; // Virtual Payment Address, e.g. "alice@demo"
+    private String vpa; 
 
     @Column(nullable = false)
     private String holderName;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
+
+
+    @Version
+    private Long version;
 
     public Account() {}
 
@@ -33,4 +37,7 @@ public class Account {
 
     public BigDecimal getBalance() { return balance; }
     public void setBalance(BigDecimal balance) { this.balance = balance; }
+
+    public Long getVersion() { return version; }
+    public void setVersion(Long version) { this.version = version; }
 }
