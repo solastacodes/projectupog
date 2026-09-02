@@ -90,6 +90,7 @@ public class ApiController {
         List<MeshSimulatorService.BridgeUpload> uploads = mesh.collectBridgeUploads();
 
         List<Map<String, Object>> results = new ArrayList<>();
+        // Upload them in parallel for concurrent idempotency.
         
          uploads.parallelStream().forEach(up -> {
             BridgeIngestionService.IngestResult r =
@@ -126,5 +127,15 @@ public class ApiController {
 
         BridgeIngestionService.IngestResult r = bridge.ingest(packet, bridgeNodeId, hopCount);
         return ResponseEntity.ok(r);
+    }
+
+    @GetMapping("/accounts")
+    public List<Account> listAccounts() {
+        return accountRepo.findAll();
+    }
+
+    @GetMapping("/transactions")
+    public List<Transaction> listTransactions() {
+        return txRepo.findTop20ByOrderByIdDesc();
     }
 }
